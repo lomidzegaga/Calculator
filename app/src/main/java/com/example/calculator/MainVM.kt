@@ -42,9 +42,9 @@ class MainVM : ViewModel() {
         }
     }
 
-    private fun calculatePercent() {
+    fun calculatePercent() {
 
-        if (state.firstNumber.isNotEmpty()) {
+        if (state.firstNumber.isNotEmpty() && state.operation == null) {
 
             val firstNumber = state.firstNumber.toDouble()
             val percent = firstNumber / 100
@@ -61,7 +61,7 @@ class MainVM : ViewModel() {
         }
     }
 
-    private fun performDeletion() {
+    fun performDeletion() {
         when {
             state.secondNumber.isNotBlank() -> state = state.copy(
                 secondNumber = state.secondNumber.dropLast(1)
@@ -79,7 +79,7 @@ class MainVM : ViewModel() {
         }
     }
 
-    private fun performCalculation() {
+    fun performCalculation() {
         val firstNumber = state.firstNumber.toDoubleOrNull()
         val secondNumber = state.secondNumber.toDoubleOrNull()
 
