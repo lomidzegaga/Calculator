@@ -5,7 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
-class MainVM : ViewModel() {
+class MainVM(
+    private val useCase: UseCaseForTesting
+) : ViewModel() {
 
     var state by mutableStateOf(CalculatorState())
         private set
@@ -42,7 +44,7 @@ class MainVM : ViewModel() {
         }
     }
 
-    fun calculatePercent() {
+    private fun calculatePercent() {
 
         if (state.firstNumber.isNotEmpty() && state.operation == null) {
 
@@ -61,7 +63,7 @@ class MainVM : ViewModel() {
         }
     }
 
-    fun performDeletion() {
+    private fun performDeletion() {
         when {
             state.secondNumber.isNotBlank() -> state = state.copy(
                 secondNumber = state.secondNumber.dropLast(1)
@@ -79,7 +81,7 @@ class MainVM : ViewModel() {
         }
     }
 
-    fun performCalculation() {
+    private fun performCalculation() {
         val firstNumber = state.firstNumber.toDoubleOrNull()
         val secondNumber = state.secondNumber.toDoubleOrNull()
 

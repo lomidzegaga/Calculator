@@ -1,5 +1,6 @@
 package com.example.calculator
 
+import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import org.junit.Before
@@ -8,10 +9,12 @@ import org.junit.Test
 class MainVMTest {
 
     private lateinit var mainVM: MainVM
+    private lateinit var useCase: UseCaseForTesting
 
     @Before
     fun setUp() {
-        mainVM = MainVM()
+        useCase = mockk<UseCaseForTesting>()
+        mainVM = MainVM(useCase)
     }
 
     @Test
@@ -19,13 +22,13 @@ class MainVMTest {
         // delete from firstNumber When it's not empty
         mainVM.onAction(CalculatorAction.Number(78))
         assertTrue(mainVM.state.firstNumber.isNotBlank())
-        mainVM.performDeletion()
+        mainVM.onAction(CalculatorAction.Delete)
         assertEquals(mainVM.state.firstNumber, "7")
 
         // delete operation when it's not null
         mainVM.onAction(CalculatorAction.Operation(CalculatorOperation.Add))
         assertTrue(mainVM.state.operation != null)
-        mainVM.performDeletion()
+        mainVM.onAction(CalculatorAction.Delete)
         assertEquals(mainVM.state.operation, null)
 
         // delete from secondNumber
@@ -34,18 +37,18 @@ class MainVMTest {
         mainVM.onAction(CalculatorAction.Operation(CalculatorOperation.Add))
         assertEquals(mainVM.state.operation, CalculatorOperation.Add)
         mainVM.onAction(CalculatorAction.Number(34))
-        mainVM.performDeletion()
+        mainVM.onAction(CalculatorAction.Delete)
         assertEquals(mainVM.state.secondNumber, "3")
         mainVM.onAction(CalculatorAction.Clear)
 
         // delete from first number with negative
         mainVM.onAction(CalculatorAction.Number(-12))
-        mainVM.performDeletion()
+        mainVM.onAction(CalculatorAction.Delete)
         assertEquals(mainVM.state.firstNumber, "-1")
         mainVM.onAction(CalculatorAction.Clear)
 
         // no change when all fields are empty
-        mainVM.performDeletion()
+        mainVM.onAction(CalculatorAction.Delete)
         assertEquals(mainVM.state.firstNumber, "")
         assertEquals(mainVM.state.secondNumber, "")
         assertEquals(mainVM.state.operation, null)
@@ -83,16 +86,16 @@ class MainVMTest {
         // calculate percent of firstNumber
         mainVM.onAction(CalculatorAction.Number(100))
         assertTrue(mainVM.state.firstNumber.isNotBlank())
-        mainVM.calculatePercent()
+        mainVM.onAction(CalculatorAction.Percent)
         assertEquals(mainVM.state.firstNumber, "1")
-        mainVM.performDeletion()
+        mainVM.onAction(CalculatorAction.Delete)
 
         // try to calculate percent when both numbers are entered
         mainVM.onAction(CalculatorAction.Number(100))
         mainVM.onAction(CalculatorAction.Operation(CalculatorOperation.Add))
         assertTrue(mainVM.state.operation != null)
         mainVM.onAction(CalculatorAction.Number(50))
-        mainVM.calculatePercent()
+        mainVM.onAction(CalculatorAction.Percent)
         assertEquals(mainVM.state.firstNumber, "100")
         assertEquals(mainVM.state.operation, CalculatorOperation.Add)
         assertEquals(mainVM.state.secondNumber, "50")
@@ -101,7 +104,7 @@ class MainVMTest {
         // try to calculate percent when only first number and operation is entered
         mainVM.onAction(CalculatorAction.Number(100))
         mainVM.onAction(CalculatorAction.Operation(CalculatorOperation.Multiply))
-        mainVM.calculatePercent()
+        mainVM.onAction(CalculatorAction.Percent)
         assertEquals(mainVM.state.firstNumber, "100")
         assertEquals(mainVM.state.operation, CalculatorOperation.Multiply)
 

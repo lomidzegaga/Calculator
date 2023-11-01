@@ -69,4 +69,7 @@ dependencies {
 
     // Material 3
     implementation ("androidx.compose.material3:material3:1.1.1")
+
+    // mock for testing
+    testImplementation("io.mockk:mockk:1.13.4")
 }
